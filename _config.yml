@@ -59,7 +59,10 @@ author:
   name   : "Axel Lim"
   #avatar : "/assets/images/bio-photo.jpg"
   #bio    : "My awesome biography constrained to a sentence or two goes here."
-  #links:
+  links:
+    - label: "axellim@berkeley.edu"
+      icon: "fas fa-fw fa-envelope"
+      url: mailto:axellim@berkeley.edu
   #  - label: "Website"
   #    icon: "fas fa-fw fa-link"
   #    url: "https://"
@@ -94,9 +97,9 @@ defaults:
       layout: single
       author_profile: true
       read_time: true
-      comments: true
-      share: true
-      related: true
+      comments: false
+      share: false
+      related: false
   # _pages
   - scope:
       path: "_pages"
