@@ -1,9 +1,9 @@
 main:
   - title: "Project 0"
-    url: /posts/2026-08-30-project-0.md
+    url: /projects/project-0/
   #- title: "Project 1"
-  #  url: /posts/2026-08-30-project-1.md
+  #  url: /projects/project-1/
   #- title: "Project 2"
-  #  url: /posts/2026-08-30-project-2.md
+  #  /projects/project-2/
   #- title: "Project 3"
-  #  url: /posts/2026-08-30-project-3.md
+  #  url: /projects/project-3/
