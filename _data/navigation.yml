@@ -1,9 +1,9 @@
 main:
-  - title: "Posts"
-    url: /posts/
-  - title: "Categories"
-    url: /categories/
-  - title: "Tags"
-    url: /tags/
-  - title: "About"
-    url: /about/
+  - title: "Project 0"
+    url: /posts/2026-08-30-project-0.md
+  #- title: "Project 1"
+  #  url: /posts/2026-08-30-project-1.md
+  #- title: "Project 2"
+  #  url: /posts/2026-08-30-project-2.md
+  #- title: "Project 3"
+  #  url: /posts/2026-08-30-project-3.md
