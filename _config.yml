@@ -18,10 +18,10 @@ name: Axel Lim
 email: axellim@berkeley.edu
 description: >- # this means to ignore newlines until "baseurl:"
   CS180 Portfolio
-copyright: "Copyright © 2026 Axel Lim."
+copyright: "2026 Axel Lim"
 #twitter_username: username
 github_username: limaxel
-minimal_mistakes_skin: dark
+minimal_mistakes_skin: "dark"
 search: true
 
 # Build settings
