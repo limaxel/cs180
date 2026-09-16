@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS180 Project 1: Colorizing the Prokudin-Gorskii Collection</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Images of the Russian Empire</h1>
+  <p class="subtitle">Colorizing the Prokudin-Gorskii glass plate collection</p>
+  <div class="author-badge">CS180 Project 1</div>
+</header>
+
+<main class="container">
+  <nav class="toc" aria-label="Page contents">
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#method">Approach</a></li>
+      <li><a href="#small-results">Single-scale</a></li>
+      <li><a href="#large-results">Image pyramid</a></li>
+      <li><a href="#features">Better features</a></li>
+      <li><a href="#extras">Bells &amp; whistles</a></li>
+      <li><a href="#own-images">My examples</a></li>
+    </ul>
+  </nav>
+
+  <section id="overview">
+    <h2>Overview</h2>
+    <p>
+      Sergei Prokudin-Gorskii recorded scenes through blue, green, and red
+      filters on a single glass plate. The scans contain those exposures stacked
+      vertically in BGR order. My goal was to split the plate, align green and
+      red to blue using translations, and combine them into one RGB image.
+    </p>
+  </section>
+
+  <section id="method">
+    <h2>Approach</h2>
+    <p>
+      I first converted every input to floating point values in the range
+      [0, 1]. For each possible displacement, I shifted the channel with
+      <code>np.roll</code> and measured normalized cross-correlation (NCC)
+      against the blue channel. I scored only the center of each image so that
+      the black and white plate borders did not control the alignment.
+    </p>
+    <div class="math-block">
+      NCC(a, b) = dot(a - mean(a), b - mean(b)) /
+      (||a - mean(a)|| ||b - mean(b)||)
+    </div>
+    <p>
+      A search from -15 to 15 pixels works for the small JPEGs. The TIFF files
+      have much larger offsets, so I built an image pyramid by repeatedly
+      resizing each channel by one half. I searched at the coarsest level,
+      doubled that displacement at the next level, and refined it within three
+      pixels. Python loops enumerate the small displacement windows, while NumPy
+      computes each NCC score over all interior pixels at once. The same search
+      sizes and border fraction are used for every image.
+    </p>
+    <p>
+      I saved a raw-pixel NCC result for every plate as the required baseline.
+      For the final outputs, I ran the same pyramid using gradient-magnitude
+      features on every image. This uses one feature metric and one set of
+      parameters rather than selecting settings for individual filenames.
+    </p>
+  </section>
+
+  <section id="small-results">
+    <h2>Single-scale results</h2>
+    <p>
+      These three low-resolution plates were aligned with a single-scale search
+      using NCC on the original pixel values. Offsets are listed as (x, y), with
+      green and red measured relative to blue.
+    </p>
+    <div class="gallery-grid">
+      <article class="image-card">
+        <img src="outputs/cathedral_ncc.jpg" alt="Aligned color image of a cathedral">
+        <div class="image-card-body">
+          <h4>Cathedral</h4>
+          <p>Green: <span class="code-pill">(2, 5)</span></p>
+          <p>Red: <span class="code-pill">(3, 12)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/monastery_ncc.jpg" alt="Aligned color image of a monastery">
+        <div class="image-card-body">
+          <h4>Monastery</h4>
+          <p>Green: <span class="code-pill">(2, -3)</span></p>
+          <p>Red: <span class="code-pill">(2, 3)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/tobolsk_ncc.jpg" alt="Aligned color image of Tobolsk">
+        <div class="image-card-body">
+          <h4>Tobolsk</h4>
+          <p>Green: <span class="code-pill">(3, 3)</span></p>
+          <p>Red: <span class="code-pill">(3, 6)</span></p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="large-results">
+    <h2>Multi-scale pyramid results</h2>
+    <p>
+      I ran the pyramid search with raw-pixel NCC on all eleven high-resolution
+      TIFFs. Ten aligned well. Emir was the one clear failure, which I discuss
+      in the next section. Each high-resolution alignment remained well below
+      the one-minute target.
+    </p>
+    <div class="gallery-grid">
+      <article class="image-card">
+        <img src="outputs/church_ncc.jpg" alt="Aligned color image of a church">
+        <div class="image-card-body">
+          <h4>Church</h4>
+          <p>Green: <span class="code-pill">(4, 25)</span> · Red: <span class="code-pill">(-4, 58)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/harvesters_ncc.jpg" alt="Aligned color image of harvesters">
+        <div class="image-card-body">
+          <h4>Harvesters</h4>
+          <p>Green: <span class="code-pill">(17, 60)</span> · Red: <span class="code-pill">(14, 124)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/icon_ncc.jpg" alt="Aligned color image of an icon">
+        <div class="image-card-body">
+          <h4>Icon</h4>
+          <p>Green: <span class="code-pill">(17, 41)</span> · Red: <span class="code-pill">(23, 89)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/ilemselga_ncc.jpg" alt="Aligned color image of a landscape">
+        <div class="image-card-body">
+          <h4>Ilemselga</h4>
+          <p>Green: <span class="code-pill">(7, 40)</span> · Red: <span class="code-pill">(11, 130)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/melons_ncc.jpg" alt="Aligned color image of melons">
+        <div class="image-card-body">
+          <h4>Melons</h4>
+          <p>Green: <span class="code-pill">(10, 81)</span> · Red: <span class="code-pill">(14, 178)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/religous_painting_ncc.jpg" alt="Aligned color image of a religious painting">
+        <div class="image-card-body">
+          <h4>Religious Painting</h4>
+          <p>Green: <span class="code-pill">(3, 28)</span> · Red: <span class="code-pill">(7, 68)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/self_portrait_ncc.jpg" alt="Aligned color self portrait">
+        <div class="image-card-body">
+          <h4>Self Portrait</h4>
+          <p>Green: <span class="code-pill">(29, 79)</span> · Red: <span class="code-pill">(37, 176)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/siren_ncc.jpg" alt="Aligned color image of a woman near water">
+        <div class="image-card-body">
+          <h4>Siren</h4>
+          <p>Green: <span class="code-pill">(-6, 49)</span> · Red: <span class="code-pill">(-25, 96)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/three_generations_ncc.jpg" alt="Aligned color image of three generations">
+        <div class="image-card-body">
+          <h4>Three Generations</h4>
+          <p>Green: <span class="code-pill">(14, 52)</span> · Red: <span class="code-pill">(11, 111)</span></p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/wharf_ncc.jpg" alt="Aligned color image of a wharf">
+        <div class="image-card-body">
+          <h4>Wharf</h4>
+          <p>Green: <span class="code-pill">(-7, 15)</span> · Red: <span class="code-pill">(-16, 82)</span></p>
+        </div>
+      </article>
+    </div>
+
+    <h3>Raw-pixel failure: Emir</h3>
+    <div class="compare-container">
+      <figure class="compare-item">
+        <img src="outputs/emir_ncc.jpg" alt="Emir with the red channel misaligned">
+        <figcaption class="compare-caption">
+          <strong>Raw-pixel NCC</strong><br>
+          Green: <span class="code-pill">(24, 49)</span> ·
+          Red: <span class="code-pill">(44, 64)</span>
+        </figcaption>
+      </figure>
+      <figure class="compare-item">
+        <img src="outputs/emir_aligned.jpg" alt="Emir aligned using gradient features">
+        <figcaption class="compare-caption">
+          <strong>Gradient NCC</strong><br>
+          Green: <span class="code-pill">(24, 49)</span> ·
+          Red: <span class="code-pill">(40, 107)</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="features">
+    <h2>Better features</h2>
+    <p>
+      Emir's blue robe has very different brightness in the blue and red
+      exposures, so raw-pixel NCC matches the red channel to the wrong content.
+      I addressed this by computing central-difference gradient magnitudes and
+      running the same NCC pyramid on those features. Edges remain in similar
+      locations even when the channel intensities differ. I used this same
+      gradient feature and pyramid search for every final output; Emir is simply
+      the image where the improvement over raw-pixel NCC is most visible.
+    </p>
+  </section>
+
+  <section id="extras">
+    <h2>Bells &amp; whistles</h2>
+    <p>
+      I also implemented automatic border cropping, gray-world white balance,
+      and percentile contrast stretching. The crop first removes pixels wrapped
+      by the alignment shifts, then scans for unusually dark, bright, or flat
+      border rows and columns. White balance scales the average channel colors
+      toward gray, and contrast stretching maps the 0.5th and 99.5th
+      percentiles toward black and white.
+    </p>
+    <div class="gallery-grid">
+      <figure class="image-card">
+        <img src="outputs/self_portrait_aligned.jpg" alt="Self portrait after alignment">
+        <figcaption class="image-card-body">
+          <h4>Aligned</h4>
+          <p>The circular shift leaves colored plate borders.</p>
+        </figcaption>
+      </figure>
+      <figure class="image-card">
+        <img src="outputs/self_portrait_cropped.jpg" alt="Self portrait after automatic cropping">
+        <figcaption class="image-card-body">
+          <h4>Automatically cropped</h4>
+          <p>The shift artifacts and part of the scanner border are removed.</p>
+        </figcaption>
+      </figure>
+      <figure class="image-card">
+        <img src="outputs/self_portrait_enhanced.jpg" alt="Self portrait after color and contrast enhancement">
+        <figcaption class="image-card-body">
+          <h4>White balanced and contrasted</h4>
+          <p>The final image has a more neutral color cast and wider contrast.</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="own-images">
+    <h2>Additional collection examples</h2>
+    <p>
+      To test the algorithm beyond the provided images, I downloaded three
+      additional full-resolution TIFF scans from the Prokudin-Gorskii
+      collection. I processed each one with the same raw-pixel NCC metric and
+      multi-scale pyramid settings used for the provided TIFF images.
+    </p>
+    <div class="gallery-grid">
+      <article class="image-card">
+        <img src="outputs/armianka_ncc.jpg" alt="Raw-pixel NCC alignment of Armianka">
+        <div class="image-card-body">
+          <h4>Armianka</h4>
+          <p>Green: <span class="code-pill">(23, 48)</span> · Red: <span class="code-pill">(39, 110)</span></p>
+          <p>
+            The face, clothing, and surrounding tree branches align clearly
+            without noticeable double edges. Small color differences around the
+            hands and embroidery may come from movement between exposures.
+          </p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/bashkirka_ncc.jpg" alt="Raw-pixel NCC alignment of Bashkirka">
+        <div class="image-card-body">
+          <h4>Bashkirka</h4>
+          <p>Green: <span class="code-pill">(20, 69)</span> · Red: <span class="code-pill">(37, 145)</span></p>
+          <p>
+            The architectural lines, striped clothing, and facial features are
+            sharply registered. This example also shows that the pyramid can
+            recover a fairly large vertical displacement.
+          </p>
+        </div>
+      </article>
+      <article class="image-card">
+        <img src="outputs/chinovnik_ncc.jpg" alt="Raw-pixel NCC alignment of Chinovnik">
+        <div class="image-card-body">
+          <h4>Chinovnik</h4>
+          <p>Green: <span class="code-pill">(-5, 60)</span> · Red: <span class="code-pill">(-21, 130)</span></p>
+          <p>
+            The wooden walls, staircase, clothing, and facial details line up
+            well. A few colored regions remain around hanging objects, but the
+            main structural edges do not show alignment ghosting.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>UC Berkeley CS180 · Project 1</p>
+</footer>
+
+</body>
+</html>
