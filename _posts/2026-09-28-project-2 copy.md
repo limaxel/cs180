@@ -119,7 +119,6 @@ def conv_two_loops(im, kernel):
     padded = np.pad(im, ((top, bottom), (left, right)))
     flipped = np.flip(kernel, axis=(0, 1))
     ans = np.zeros_like(im, dtype=float)
-
     for r in range(im.shape[0]):
         for c in range(im.shape[1]):
             patch = padded[r:r+kh, c:c+kw]
@@ -247,7 +246,7 @@ box_filter = np.ones((9, 9), dtype=float) / 81
 </div>
 
 ## Bells &amp; whistles: orientation
-<p>I avoided all built-in angle functions. I approximated <code>atan(dy/dx)</code> with a short polynomial on <code>[0, 1]</code>, used reciprocal symmetry outside that interval, and then applied the quadrant and vertical-axis corrections. Hue wraps around the direction, while brightness is the gradient magnitude. Direction in flat areas is basically meaningless, so making weak gradients dark helped a lot.</p>
+<p>I avoided all built-in angle functions. I approximated <code>atan(dy/dx)</code> with a short polynomial on <code>[0, 1]</code>, used reciprocal symmetry outside that interval, and then applied the quadrant and vertical-axis corrections myself. Hue wraps around the direction, while brightness is the gradient magnitude. Direction in flat areas is basically meaningless, so making weak gradients dark helped a lot.</p>
 <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
 <img width="400px" src="/cs180/assets/images/proj2/part1_3/gradient_orientation.jpg" alt="Gradient orientation in cyclic colors">
 <i style="text-align: center; max-width: 400px; height: 3lh">The cyclic hue makes similarly oriented edges share a color. Bright lines are the strong gradients.</i>
@@ -574,7 +573,7 @@ hybrid = np.clip(low + high, 0, 1)</code></pre>
 
 ## Recreation of Figure 3.42 (a)-(l)
 
-<p>The first three rows are the high-, medium-, and low-frequency bands from levels 0, 2, and 4. In each row, the left and middle panels are the masked apple and orange contributions, and the right panel is their sum. The last row sums each source's contributions across the complete stack and then shows the final reconstruction.</p>
+<p>This compact panel follows the reference layout directly. The first three rows are the high-, medium-, and low-frequency bands from levels 0, 2, and 4. In each row, the left and middle panels are the masked apple and orange contributions, and the right panel is their sum. The last row sums each source's contributions across the complete stack and then shows the final reconstruction.</p>
 <div class="rubric-grid">
 <figure><img src="/cs180/assets/images/proj2/part2_3/level_0_masked_apple.jpg" alt="Fine masked apple contribution"><figcaption>(a) Fine apple contribution, L0</figcaption></figure>
 <figure><img src="/cs180/assets/images/proj2/part2_3/level_0_masked_orange.jpg" alt="Fine masked orange contribution"><figcaption>(b) Fine orange contribution, L0</figcaption></figure>
@@ -589,7 +588,9 @@ hybrid = np.clip(low + high, 0, 1)</code></pre>
 <figure><img src="/cs180/assets/images/proj2/part2_3/figure342_orange_contribution.jpg" alt="Orange contribution summed across the stack"><figcaption>(k) Orange stack contribution</figcaption></figure>
 <figure><img src="/cs180/assets/images/proj2/part2_4/oraple_standard.jpg" alt="Final reconstructed Oraple"><figcaption>(l) Final reconstructed Oraple</figcaption></figure>
 </div>
+
 ## Gaussian stacks (no downsampling)
+
 <div class="image-grid">
 <div style="display: flex; flex-direction: row; justify-content: space-between;">
 <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -938,6 +939,7 @@ result = sum(mixed_levels)</code></pre>
 </div>
 </div>
 </div>
+
 ### Favorite-result Laplacian process
 
 <p>Moon/cheese is my favorite custom result, so I repeated the Figure 3.42-style analysis for this irregular mask. The rows below show a fine band (L0), a middle band (L3), and the coarse residual (L6). The left panel in each row is the masked cheese contribution, the middle panel is the masked moon contribution, and the right panel is their combined band. Summing all seven combined bands produces the final cheese moon shown above.</p>
@@ -952,8 +954,11 @@ result = sum(mixed_levels)</code></pre>
 <figure><img src="/cs180/assets/images/proj2/part2_4/moon_level_6_masked_moon.jpg" alt="Coarse masked moon residual contribution"><figcaption>Coarse L6: masked moon</figcaption></figure>
 <figure><img src="/cs180/assets/images/proj2/part2_4/moon_level_6_blended.jpg" alt="Coarse combined moon and cheese residual"><figcaption>Coarse L6: combined residual</figcaption></figure>
 </div>
+
 <p>The snake/cord junction is harder than the moon/cheese blend because its foreground also needs a clean cutout. The displayed cord mask prevents the old gray rectangle from entering the blend. A second shallow curved mask handles only the handoff from snake neck to cable, while both sides now share the same grass background.</p>
+
 ## Snake / extension cord
+
 <div class="image-grid">
 <div style="display: flex; flex-direction: row; justify-content: space-between;">
 <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -995,6 +1000,9 @@ result = sum(mixed_levels)</code></pre>
 [Moon Photo](https://www.magnific.com/free-photo/beautiful-glowing-gray-full-moon_29302752.htm) by Wirestock via Magnific<br>
 [Cheese Photo](https://unsplash.com/photos/grapes-on-yellow-plastic-container-o0-oAQvWncU) by Rickie-Tom Schünemann via Unsplash<br>
 [Snake Photo](https://unsplash.com/photos/VUr5nmC1IM4) by Mohan Moolepetlu via Unsplash<br>
+Personal photos: portrait, extension cord, keyboard, and lighthouse scene.<br>
+
+[Complete Python source](/cs180/solution.py) &middot; [Run instructions](/cs180/README.md)
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
