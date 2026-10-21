@@ -1,0 +1,20 @@
+{
+  "seed": 180,
+  "device": "cuda",
+  "single_step_final_loss": 0.008394848173484206,
+  "single_step_parameters": 7891073,
+  "pure_noise_observation": "The outputs converge toward a soft, centered digit-like centroid rather than diverse 0-9 samples. Because the input noise is statistically independent of its randomly paired target, the MSE-optimal prediction is the conditional mean; here that is essentially the pixelwise mean of the entire MNIST training distribution.",
+  "pure_noise_final_loss": 0.06758889563381672,
+  "time_fm_final_loss": 0.08843378856778145,
+  "time_fm_parameters": 1996417,
+  "class_fm_final_loss": 0.08319276452064514,
+  "class_fm_no_scheduler_final_loss": 0.08405757769942283,
+  "no_scheduler_strategy": "Adam with a constant 1e-3 learning rate for 10 epochs; the smaller rate replaces the scheduled run's unstable 1e-2 opening while retaining its final learning-rate scale.",
+  "scheduler_observation": "Both runs start from identical model weights and use the same training/data seed. The scheduled run begins at 1e-2 and decays; the other uses constant 1e-3.",
+  "bells_time_model": {
+    "baseline": "D=64, 10 epochs",
+    "improved": "D=128, 20 epochs",
+    "final_loss": 0.08481355391442776,
+    "parameters": 7974145
+  }
+}

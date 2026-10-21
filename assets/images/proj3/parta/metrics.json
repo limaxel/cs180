@@ -1,0 +1,12 @@
+{
+  "seed": 180,
+  "step_size": 0.02,
+  "cfg_w": 7,
+  "reconstruction_mse": {
+    "blur": 0.03147406503558159,
+    "one_step": 0.014474760740995407,
+    "euler": 0.018599649891257286
+  },
+  "web_image_credit": "Colorful hot air balloon in flight, Aaron Burden, Unsplash/Wikimedia Commons, CC0 1.0",
+  "hybrid_lowpass_sigma": 16
+}
