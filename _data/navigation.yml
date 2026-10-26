@@ -7,5 +7,5 @@ main:
     url: /projects/project-2/
   - title: "Project 3"
     url: /projects/project-3/
-  # - title: "Project 4"
-  #   url: /projects/project-4/
+  - title: "Project 4"
+    url: /projects/project-4/
